@@ -72,11 +72,26 @@ class App extends Component {
   }
 
   render() {
-    return (
+    const style = {
+      position: 'absolute',
+      bottom: '32px',
+      zIndex: 100,
+      width: '100%',
+      textAlign: 'center',
+      fontWeight: 'bold',
+      fontSize: '24px',
+    };
+
+    return [
       <div ref={this.gmapsRef} style={{ width: '100vw', height: '100vh' }}>
         Google Maps
-      </div>
-    );
+      </div>,
+      <div style={style}>
+        <a href="https://github.com/maechabin/react-googlemaps-sample" target="_blank">
+          maechabin/react-googlemaps-sample - GitHub
+        </a>
+      </div>,
+    ];
   }
 }
 
