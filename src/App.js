@@ -4,7 +4,6 @@ import './App.css';
 class App extends Component {
   constructor(props) {
     super(props);
-
     this.gmapsRef = React.createRef();
   }
 
@@ -13,22 +12,23 @@ class App extends Component {
   }
 
   initMap() {
+    const { google } = this.props;
     /**
      * 地図を表示する際のオプション（初期表示）
      * Mapsのオプション一覧
      * https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
      */
     const mapOptions = {
-      center: new this.props.google.maps.LatLng(-34.397, 150.644),
+      center: new google.maps.LatLng(-34.397, 150.644),
       zoom: 8,
-      mapTypeId: this.props.google.maps.MapTypeId.ROADMAP,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
     };
 
     /** 範囲（境界）のインスタンスを作成するクラス */
-    const bounds = new this.props.google.maps.LatLngBounds();
+    const bounds = new google.maps.LatLngBounds();
 
     /** Mapオブジェクトに地図表示要素情報とオプション情報を渡し、インスタンス生成 */
-    const map = new this.props.google.maps.Map(this.gmapsRef.current, mapOptions); // <= refで取得した要素
+    const map = new google.maps.Map(this.gmapsRef.current, mapOptions); // <= refで取得した要素
 
     /** Markerを表示する拠点リスト */
     const points = [
@@ -45,7 +45,7 @@ class App extends Component {
        * Markerオプション
        * https://developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions
        */
-      const marker = new this.props.google.maps.Marker({
+      const marker = new google.maps.Marker({
         position: point.position,
         map,
         draggable: true, // ドラッグできるか
@@ -57,13 +57,13 @@ class App extends Component {
       bounds.extend(marker.position);
 
       /** 吹き出しを設定 */
-      const infowindow = new this.props.google.maps.InfoWindow({
+      const infoWindow = new google.maps.InfoWindow({
         content: point.title,
       });
 
       /** クリックs時の処理設定（吹き出し表示） */
       marker.addListener('click', () => {
-        infowindow.open(map, marker);
+        infoWindow.open(map, marker);
       });
     });
 
@@ -72,6 +72,7 @@ class App extends Component {
   }
 
   render() {
+    const Fragment = React.Fragment;
     const style = {
       position: 'absolute',
       bottom: '32px',
@@ -82,16 +83,21 @@ class App extends Component {
       fontSize: '24px',
     };
 
-    return [
-      <div ref={this.gmapsRef} style={{ width: '100vw', height: '100vh' }}>
-        Google Maps
-      </div>,
-      <div style={style}>
-        <a href="https://github.com/maechabin/react-googlemaps-sample" target="_blank">
-          maechabin/react-googlemaps-sample - GitHub
-        </a>
-      </div>,
-    ];
+    return (
+      <Fragment>
+        <div ref={this.gmapsRef} style={{ width: '100vw', height: '100vh' }}>
+          Google Maps
+        </div>
+        <div style={style}>
+          <a
+            href="https://github.com/maechabin/react-googlemaps-sample"
+            target="_blank"
+            rel="noopener noreferrer">
+            maechabin/react-googlemaps-sample - GitHub
+          </a>
+        </div>
+      </Fragment>
+    );
   }
 }
 
