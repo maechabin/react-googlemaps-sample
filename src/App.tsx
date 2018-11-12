@@ -1,17 +1,18 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import './App.css';
 
-class App extends Component {
-  constructor(props) {
+class App extends React.Component<any, any> {
+  gmapsRef = React.createRef<HTMLDivElement>();
+
+  constructor(props: any) {
     super(props);
-    this.gmapsRef = React.createRef();
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.initMap();
   }
 
-  initMap() {
+  initMap(): void {
     const { google } = this.props;
     /**
      * 地図を表示する際のオプション（初期表示）
@@ -71,7 +72,7 @@ class App extends Component {
     map.fitBounds(bounds);
   }
 
-  render() {
+  render(): JSX.Element {
     const Fragment = React.Fragment;
     const style = {
       position: 'absolute',
@@ -81,7 +82,7 @@ class App extends Component {
       textAlign: 'center',
       fontWeight: 'bold',
       fontSize: '24px',
-    };
+    } as any;
 
     return (
       <Fragment>
