@@ -1,10 +1,14 @@
 import * as React from 'react';
 import './App.css';
 
-class App extends React.Component<any, any> {
+interface AppProps {
+  google: any;
+}
+
+class App extends React.Component<AppProps, any> {
   gmapsRef = React.createRef<HTMLDivElement>();
 
-  constructor(props: any) {
+  constructor(props: AppProps) {
     super(props);
   }
 
@@ -63,9 +67,12 @@ class App extends React.Component<any, any> {
       });
 
       /** クリックs時の処理設定（吹き出し表示） */
-      marker.addListener('click', () => {
-        infoWindow.open(map, marker);
-      });
+      marker.addListener(
+        'click',
+        (): void => {
+          infoWindow.open(map, marker);
+        },
+      );
     });
 
     /** すべてのMarkerを地図に収める */
@@ -74,7 +81,8 @@ class App extends React.Component<any, any> {
 
   render(): JSX.Element {
     const Fragment = React.Fragment;
-    const style = {
+    const style1 = { width: '100vw', height: '100vh' } as React.CSSProperties;
+    const style2 = {
       position: 'absolute',
       bottom: '32px',
       zIndex: 100,
@@ -82,14 +90,14 @@ class App extends React.Component<any, any> {
       textAlign: 'center',
       fontWeight: 'bold',
       fontSize: '24px',
-    } as any;
+    } as React.CSSProperties;
 
     return (
       <Fragment>
-        <div ref={this.gmapsRef} style={{ width: '100vw', height: '100vh' }}>
+        <div ref={this.gmapsRef} style={style1}>
           Google Maps
         </div>
-        <div style={style}>
+        <div style={style2}>
           <a
             href="https://github.com/maechabin/react-googlemaps-sample"
             target="_blank"
