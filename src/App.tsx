@@ -1,8 +1,18 @@
 import * as React from 'react';
 import './App.css';
 
+/** 取得するProps */
 interface AppProps {
   google: any;
+}
+
+/** マーカーの情報 */
+interface Point {
+  title: string;
+  position: {
+    lat: number;
+    lng: number;
+  };
 }
 
 class App extends React.Component<AppProps, any> {
@@ -23,20 +33,20 @@ class App extends React.Component<AppProps, any> {
      * Mapsのオプション一覧
      * https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
      */
-    const mapOptions = {
+    const mapOptions: google.maps.MapOptions = {
       center: new google.maps.LatLng(-34.397, 150.644),
       zoom: 8,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
     };
 
     /** 範囲（境界）のインスタンスを作成するクラス */
-    const bounds = new google.maps.LatLngBounds();
+    const bounds: google.maps.LatLngBounds = new google.maps.LatLngBounds();
 
     /** Mapオブジェクトに地図表示要素情報とオプション情報を渡し、インスタンス生成 */
-    const map = new google.maps.Map(this.gmapsRef.current, mapOptions); // <= refで取得した要素
+    const map: google.maps.Map = new google.maps.Map(this.gmapsRef.current, mapOptions); // <= refで取得した要素
 
     /** Markerを表示する拠点リスト */
-    const points = [
+    const points: Point[] = [
       { title: 'maker1', position: { lat: -25.363, lng: 131.044 } },
       { title: 'maker2', position: { lat: -34.397, lng: 11.044 } },
       { title: 'maker3', position: { lat: 34.397, lng: 25.044 } },
@@ -44,25 +54,27 @@ class App extends React.Component<AppProps, any> {
     ];
 
     /** Markerを表示 */
-    points.forEach((point) => {
+    points.forEach((point: Point) => {
       /**
        * Markerを設定
        * Markerオプション
        * https://developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions
        */
-      const marker = new google.maps.Marker({
-        position: point.position,
+      const marker: google.maps.Marker = new google.maps.Marker({
         map,
         draggable: true, // ドラッグできるか
         opacity: 0.7, // 透明度
         title: point.title,
       });
 
+      /** マーカーに位置情報をセット */
+      marker.setPosition(point.position);
+
       /** 位置情報を範囲に追加 */
-      bounds.extend(marker.position);
+      bounds.extend(marker.getPosition());
 
       /** 吹き出しを設定 */
-      const infoWindow = new google.maps.InfoWindow({
+      const infoWindow: google.maps.InfoWindow = new google.maps.InfoWindow({
         content: point.title,
       });
 
