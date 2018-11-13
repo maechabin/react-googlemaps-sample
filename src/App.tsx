@@ -78,7 +78,7 @@ class App extends React.Component<AppProps, any> {
         content: point.title,
       });
 
-      /** クリックs時の処理設定（吹き出し表示） */
+      /** クリック時の処理設定（吹き出し表示） */
       marker.addListener(
         'click',
         (): void => {
@@ -89,6 +89,52 @@ class App extends React.Component<AppProps, any> {
 
     /** すべてのMarkerを地図に収める */
     map.fitBounds(bounds);
+
+    /**
+     * polyline上を動くシンボル
+     * https://developers.google.com/maps/documentation/javascript/symbols#animate
+     * */
+    const lineSymbol = {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 8,
+      strokeColor: '#113345',
+    };
+
+    /** polylineを表示 */
+    const line: google.maps.Polyline = new google.maps.Polyline({
+      path: [
+        { lat: 34.397, lng: 25.044 },
+        { lat: -34.397, lng: 11.044 },
+        { lat: -25.363, lng: 131.044 },
+        { lat: 24.397, lng: 90.044 },
+        { lat: 34.397, lng: 25.044 },
+      ],
+      icons: [
+        {
+          icon: lineSymbol,
+          offset: '100%',
+        },
+      ],
+      strokeColor: '#ccc',
+      map: map,
+    });
+
+    /** アニメーションを実行 */
+    this.animateCircle(line);
+  }
+
+  /**
+   * シンボルをpolylineに沿ってアニメーションさせる
+   * */
+  private animateCircle(line: google.maps.Polyline) {
+    let count = 0;
+    window.setInterval(() => {
+      count = (count + 1) % 200;
+
+      const icons = line.get('icons');
+      icons[0].offset = count / 2 + '%';
+      line.set('icons', icons);
+    }, 40);
   }
 
   render(): JSX.Element {
