@@ -3,7 +3,33 @@ import './App.css';
 
 /** 取得するProps */
 interface AppProps {
-  google: any;
+  google: {
+    maps: {
+      InfoWindow: {
+        new (opts?: google.maps.InfoWindowOptions): google.maps.InfoWindow;
+      };
+      Map: {
+        new (mapDiv: Element | null, opts?: google.maps.MapOptions): google.maps.Map;
+      };
+      MapTypeId: google.maps.MapTypeId;
+      Marker: {
+        new (opts?: google.maps.MarkerOptions): google.maps.Marker;
+      };
+      LatLngBounds: {
+        new (
+          sw?: google.maps.LatLng | google.maps.LatLngLiteral,
+          ne?: google.maps.LatLng | google.maps.LatLngLiteral,
+        ): google.maps.LatLngBounds;
+      };
+      LatLng: {
+        new (lat: number, lng: number, noWrap?: boolean): google.maps.LatLng;
+      };
+      Polyline: {
+        new (opts?: google.maps.PolylineOptions): google.maps.Polyline;
+      };
+      SymbolPath: google.maps.SymbolPath;
+    };
+  };
 }
 
 /** マーカーの情報 */
@@ -17,6 +43,9 @@ interface Point {
 
 class App extends React.Component<AppProps, any> {
   gmapsRef = React.createRef<HTMLDivElement>();
+
+  MapTypeId = google.maps.MapTypeId;
+  SymbolPath = google.maps.SymbolPath;
 
   constructor(props: AppProps) {
     super(props);
@@ -36,14 +65,14 @@ class App extends React.Component<AppProps, any> {
     const mapOptions: google.maps.MapOptions = {
       center: new google.maps.LatLng(-34.397, 150.644),
       zoom: 8,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      mapTypeId: this.MapTypeId.ROADMAP,
     };
 
     /** 範囲（境界）のインスタンスを作成するクラス */
-    const bounds: google.maps.LatLngBounds = new google.maps.LatLngBounds();
+    const bounds = new google.maps.LatLngBounds();
 
     /** Mapオブジェクトに地図表示要素情報とオプション情報を渡し、インスタンス生成 */
-    const map: google.maps.Map = new google.maps.Map(this.gmapsRef.current, mapOptions); // <= refで取得した要素
+    const map = new google.maps.Map(this.gmapsRef.current, mapOptions); // <= refで取得した要素
 
     /** Markerを表示する拠点リスト */
     const points: Point[] = [
@@ -60,21 +89,19 @@ class App extends React.Component<AppProps, any> {
        * Markerオプション
        * https://developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions
        */
-      const marker: google.maps.Marker = new google.maps.Marker({
+      const marker = new google.maps.Marker({
         map,
         draggable: true, // ドラッグできるか
         opacity: 0.7, // 透明度
+        position: point.position,
         title: point.title,
       });
-
-      /** マーカーに位置情報をセット */
-      marker.setPosition(point.position);
 
       /** 位置情報を範囲に追加 */
       bounds.extend(marker.getPosition());
 
       /** 吹き出しを設定 */
-      const infoWindow: google.maps.InfoWindow = new google.maps.InfoWindow({
+      const infoWindow = new google.maps.InfoWindow({
         content: point.title,
       });
 
@@ -95,7 +122,7 @@ class App extends React.Component<AppProps, any> {
      * https://developers.google.com/maps/documentation/javascript/symbols#animate
      * */
     const lineSymbol = {
-      path: google.maps.SymbolPath.CIRCLE,
+      path: this.SymbolPath.CIRCLE,
       scale: 8,
       strokeColor: '#113345',
     };
