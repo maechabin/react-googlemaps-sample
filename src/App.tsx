@@ -1,36 +1,7 @@
+/// <reference types="@types/googlemaps" />
+
 import * as React from 'react';
 import './App.css';
-
-/** 取得するProps */
-interface AppProps {
-  google: {
-    maps: {
-      InfoWindow: {
-        new (opts?: google.maps.InfoWindowOptions): google.maps.InfoWindow;
-      };
-      Map: {
-        new (mapDiv: Element | null, opts?: google.maps.MapOptions): google.maps.Map;
-      };
-      MapTypeId: google.maps.MapTypeId;
-      Marker: {
-        new (opts?: google.maps.MarkerOptions): google.maps.Marker;
-      };
-      LatLngBounds: {
-        new (
-          sw?: google.maps.LatLng | google.maps.LatLngLiteral,
-          ne?: google.maps.LatLng | google.maps.LatLngLiteral,
-        ): google.maps.LatLngBounds;
-      };
-      LatLng: {
-        new (lat: number, lng: number, noWrap?: boolean): google.maps.LatLng;
-      };
-      Polyline: {
-        new (opts?: google.maps.PolylineOptions): google.maps.Polyline;
-      };
-      SymbolPath: google.maps.SymbolPath;
-    };
-  };
-}
 
 /** マーカーの情報 */
 interface Point {
@@ -41,22 +12,20 @@ interface Point {
   };
 }
 
-class App extends React.Component<AppProps, any> {
+interface LineSymbol {
+  path: google.maps.SymbolPath;
+  scale: number;
+  strokeColor: string;
+}
+
+class App extends React.Component<any, any> {
   gmapsRef = React.createRef<HTMLDivElement>();
-
-  MapTypeId = google.maps.MapTypeId;
-  SymbolPath = google.maps.SymbolPath;
-
-  constructor(props: AppProps) {
-    super(props);
-  }
 
   componentDidMount(): void {
     this.initMap();
   }
 
   initMap(): void {
-    const { google } = this.props;
     /**
      * 地図を表示する際のオプション（初期表示）
      * Mapsのオプション一覧
@@ -65,7 +34,7 @@ class App extends React.Component<AppProps, any> {
     const mapOptions: google.maps.MapOptions = {
       center: new google.maps.LatLng(-34.397, 150.644),
       zoom: 8,
-      mapTypeId: this.MapTypeId.ROADMAP,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
     };
 
     /** 範囲（境界）のインスタンスを作成するクラス */
@@ -121,14 +90,14 @@ class App extends React.Component<AppProps, any> {
      * polyline上を動くシンボル
      * https://developers.google.com/maps/documentation/javascript/symbols#animate
      * */
-    const lineSymbol = {
-      path: this.SymbolPath.CIRCLE,
+    const lineSymbol: LineSymbol = {
+      path: google.maps.SymbolPath.CIRCLE,
       scale: 8,
       strokeColor: '#113345',
     };
 
     /** polylineを表示 */
-    const line: google.maps.Polyline = new google.maps.Polyline({
+    const line = new google.maps.Polyline({
       path: [
         { lat: 34.397, lng: 25.044 },
         { lat: -34.397, lng: 11.044 },
