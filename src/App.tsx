@@ -12,6 +12,7 @@ interface Point {
   };
 }
 
+/** ライン上を動くシンボル */
 interface LineSymbol {
   path: google.maps.SymbolPath;
   scale: number;
@@ -22,6 +23,7 @@ class App extends React.Component<any, any> {
   gmapsRef = React.createRef<HTMLDivElement>();
 
   componentDidMount(): void {
+    /** コンポーネントがマウントされたらMapを表示する */
     this.initMap();
   }
 
