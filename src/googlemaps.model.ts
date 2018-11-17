@@ -27,3 +27,19 @@ export interface GoogleMaps {
     };
   };
 }
+
+/** マーカーの情報 */
+export interface Point {
+  title: string;
+  position: {
+    lat: number;
+    lng: number;
+  };
+}
+
+/** ライン上を動くシンボル */
+export interface LineSymbol {
+  path: google.maps.SymbolPath;
+  scale: number;
+  strokeColor: string;
+}
