@@ -1,7 +1,7 @@
 import { Point, LineSymbol } from './googlemaps.model';
 
 class Maps {
-  initMap(mapDiv: HTMLDivElement | null): void {
+  public initMap(mapDiv: HTMLDivElement | null): void {
     /**
      * 地図を表示する際のオプション（初期表示）
      * Mapsのオプション一覧
@@ -100,7 +100,7 @@ class Maps {
   /**
    * シンボルをpolylineに沿ってアニメーションさせる
    * */
-  private animateCircle(line: google.maps.Polyline) {
+  private animateCircle(line: google.maps.Polyline): void {
     let count = 0;
     window.setInterval((): void => {
       count = (count + 1) % 200;

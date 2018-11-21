@@ -2,7 +2,29 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { shallow, mount, render } from 'enzyme';
 import App from './App';
+import { any } from 'prop-types';
+
+(window as any).google = {
+  maps: {
+    InfoWindow: class {},
+    LatLng: class {},
+    LatLngBounds: class {
+      extend() {}
+    },
+    Map: class {
+      fitBounds() {}
+    },
+    Marker: class {
+      getPosition() {}
+      addListener() {}
+    },
+    Polyline: class {},
+    MapTypeId: any,
+    SymbolPath: any,
+  },
+};
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
