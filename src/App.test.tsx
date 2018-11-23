@@ -14,6 +14,7 @@ import { any } from 'prop-types';
       extend() {}
     },
     Map: class {
+      initMap() {}
       fitBounds() {}
     },
     Marker: class {
@@ -30,4 +31,16 @@ it('renders without crashing', () => {
   const div = document.createElement('div');
   ReactDOM.render(<App />, div);
   ReactDOM.unmountComponentAtNode(div);
+});
+
+it('componentDidMount', () => {
+  // setup
+  const component = mount(<App />);
+  const initMapSpy = jest.spyOn((component as any).map, 'initMap');
+
+  // exercise
+  (component as any).instance().componentDidMount();
+
+  // verify
+  expect(initMapSpy).toHaveBeenCalled();
 });
