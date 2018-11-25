@@ -2,30 +2,41 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { shallow, mount, render } from 'enzyme';
+import * as enzyme from 'enzyme';
 import App from './App';
-import { any } from 'prop-types';
 
-(window as any).google = {
-  maps: {
-    InfoWindow: class {},
-    LatLng: class {},
-    LatLngBounds: class {
-      extend() {}
+import Adapter from 'enzyme-adapter-react-16';
+enzyme.configure({ adapter: new Adapter() });
+
+jest.mock('./maps', () => {
+  return jest.fn().mockImplementation(() => {
+    return {
+      initMap: jest.fn(),
+    };
+  });
+});
+
+beforeEach(() => {
+  (window as any).google = {
+    maps: {
+      InfoWindow: class {},
+      LatLng: class {},
+      LatLngBounds: class {
+        extend() {}
+      },
+      Map: class {
+        fitBounds() {}
+      },
+      Marker: class {
+        getPosition() {}
+        addListener() {}
+      },
+      Polyline: class {},
+      MapTypeId: '',
+      SymbolPath: '',
     },
-    Map: class {
-      initMap() {}
-      fitBounds() {}
-    },
-    Marker: class {
-      getPosition() {}
-      addListener() {}
-    },
-    Polyline: class {},
-    MapTypeId: any,
-    SymbolPath: any,
-  },
-};
+  };
+});
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
@@ -35,12 +46,13 @@ it('renders without crashing', () => {
 
 it('componentDidMount', () => {
   // setup
-  const component = mount(<App />);
-  const initMapSpy = jest.spyOn((component as any).map, 'initMap');
+  const app = new App('', '');
+  const initMapSpy = jest.spyOn(app.map, 'initMap');
 
   // exercise
-  (component as any).instance().componentDidMount();
+  app.componentDidMount();
 
   // verify
   expect(initMapSpy).toHaveBeenCalled();
+  expect(initMapSpy).toHaveBeenCalledWith(app.gmapsRef.current);
 });
