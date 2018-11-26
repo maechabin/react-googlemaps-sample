@@ -1,6 +1,18 @@
 import { Point, LineSymbol } from './googlemaps.model';
 
 class Maps {
+  /** Markerを表示する拠点リスト */
+  points: Point[] = [
+    { title: 'maker1', position: { lat: -25.363, lng: 131.044 } },
+    { title: 'maker2', position: { lat: -32.397, lng: 20.044 } },
+    { title: 'maker3', position: { lat: 34.397, lng: 25.044 } },
+    { title: 'maker4', position: { lat: 48.397, lng: 90.044 } },
+    { title: 'maker5', position: { lat: 29.32, lng: 135.9 } },
+  ];
+
+  /** ポリライン */
+  line: google.maps.Polyline | null = null;
+
   public initMap(mapDiv: HTMLDivElement | null): void {
     /**
      * 地図を表示する際のオプション（初期表示）
@@ -19,16 +31,8 @@ class Maps {
     /** Mapオブジェクトに地図表示要素情報とオプション情報を渡し、インスタンス生成 */
     const map = new google.maps.Map(mapDiv, mapOptions); // <= refで取得した要素
 
-    /** Markerを表示する拠点リスト */
-    const points: Point[] = [
-      { title: 'maker1', position: { lat: -25.363, lng: 131.044 } },
-      { title: 'maker2', position: { lat: -34.397, lng: 11.044 } },
-      { title: 'maker3', position: { lat: 34.397, lng: 25.044 } },
-      { title: 'maker4', position: { lat: 24.397, lng: 90.044 } },
-    ];
-
     /** Markerを表示 */
-    points.forEach(
+    this.points.forEach(
       (point: Point): void => {
         /**
          * Markerを設定
@@ -51,18 +55,47 @@ class Maps {
           content: point.title,
         });
 
-        /** クリック時の処理設定（吹き出し表示） */
-        marker.addListener(
-          'click',
-          (): void => {
-            infoWindow.open(map, marker);
-          },
-        );
+        /** クリック時の処理（吹き出し表示） */
+        marker.addListener('click', () => {
+          infoWindow.open(map, marker);
+        });
+
+        /** マーカードラッグ時の処理（ポリラインのアップデート） */
+        marker.addListener('dragend', (event: google.maps.MouseEvent) => {
+          const title = point.title;
+          this.points = this.points.map((point: Point) => {
+            if (point.title === title) {
+              return {
+                ...point,
+                position: {
+                  lat: event.latLng.lat(),
+                  lng: event.latLng.lng(),
+                },
+              };
+            }
+            return point;
+          });
+
+          this.initPolyLine(map);
+        });
       },
     );
 
     /** すべてのMarkerを地図に収める */
     map.fitBounds(bounds);
+
+    /** ポリラインを表示する */
+    this.initPolyLine(map);
+  }
+
+  public initPolyLine(map: google.maps.Map): void {
+    /**
+     * 既存のポリラインを削除
+     * https://developers.google.com/maps/documentation/javascript/examples/polyline-remove
+     * */
+    if (this.line !== null) {
+      this.line.setMap(null);
+    }
 
     /**
      * polyline上を動くシンボル
@@ -75,14 +108,12 @@ class Maps {
     };
 
     /** polylineを表示 */
-    const line = new google.maps.Polyline({
-      path: [
-        { lat: 34.397, lng: 25.044 },
-        { lat: -34.397, lng: 11.044 },
-        { lat: -25.363, lng: 131.044 },
-        { lat: 24.397, lng: 90.044 },
-        { lat: 34.397, lng: 25.044 },
-      ],
+    this.line = new google.maps.Polyline({
+      path: this.points
+        .map((point: Point) => {
+          return point.position;
+        })
+        .concat([this.points[0].position]),
       icons: [
         {
           icon: lineSymbol,
@@ -93,8 +124,11 @@ class Maps {
       map,
     });
 
+    /** ポリラインを表示 */
+    this.line.setMap(map);
+
     /** アニメーションを実行 */
-    this.animateCircle(line);
+    this.animateCircle(this.line);
   }
 
   /**
