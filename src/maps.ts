@@ -10,9 +10,15 @@ class Maps {
     { title: 'maker5', position: { lat: 29.32, lng: 135.9 } },
   ];
 
+  map!: google.maps.Map;
+
   /** ポリライン */
   line: google.maps.Polyline | null = null;
 
+  /**
+   * Mapを任意の要素に表示する
+   * @param mapDiv Mapを表示する要素
+   */
   public initMap(mapDiv: HTMLDivElement | null): void {
     /**
      * 地図を表示する際のオプション（初期表示）
@@ -25,11 +31,16 @@ class Maps {
       mapTypeId: google.maps.MapTypeId.ROADMAP,
     };
 
+    /** Mapオブジェクトに地図表示要素情報とオプション情報を渡し、インスタンス生成 */
+    this.map = new google.maps.Map(mapDiv, mapOptions); // <= refで取得した要素
+  }
+
+  /**
+   * Map上にマーカーを表示する
+   */
+  public initMarker(): void {
     /** 範囲（境界）のインスタンスを作成するクラス */
     const bounds = new google.maps.LatLngBounds();
-
-    /** Mapオブジェクトに地図表示要素情報とオプション情報を渡し、インスタンス生成 */
-    const map = new google.maps.Map(mapDiv, mapOptions); // <= refで取得した要素
 
     /** Markerを表示 */
     this.points.forEach(
@@ -40,7 +51,7 @@ class Maps {
          * https://developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions
          */
         const marker = new google.maps.Marker({
-          map,
+          map: this.map,
           draggable: true, // ドラッグできるか
           opacity: 0.7, // 透明度
           position: point.position,
@@ -57,7 +68,7 @@ class Maps {
 
         /** クリック時の処理（吹き出し表示） */
         marker.addListener('click', () => {
-          infoWindow.open(map, marker);
+          infoWindow.open(this.map, marker);
         });
 
         /** マーカードラッグ時の処理（ポリラインのアップデート） */
@@ -76,19 +87,19 @@ class Maps {
             return point;
           });
 
-          this.initPolyLine(map);
+          this.initPolyLine();
         });
       },
     );
 
     /** すべてのMarkerを地図に収める */
-    map.fitBounds(bounds);
-
-    /** ポリラインを表示する */
-    this.initPolyLine(map);
+    this.map.fitBounds(bounds);
   }
 
-  public initPolyLine(map: google.maps.Map): void {
+  /**
+   * Map上にポリラインを表示する
+   */
+  public initPolyLine(): void {
     /**
      * 既存のポリラインを削除
      * https://developers.google.com/maps/documentation/javascript/examples/polyline-remove
@@ -121,11 +132,11 @@ class Maps {
         },
       ],
       strokeColor: '#ccc',
-      map,
+      map: this.map,
     });
 
     /** ポリラインを表示 */
-    this.line.setMap(map);
+    this.line.setMap(this.map);
 
     /** アニメーションを実行 */
     this.animateCircle(this.line);

@@ -11,17 +11,21 @@ class App extends React.Component<any, any> {
   componentDidMount(): void {
     /** コンポーネントがマウントされたらMapを表示する */
     this.map.initMap(this.gmapsRef.current);
+
+    /** Map上にマーカーを表示する */
+    this.map.initMarker();
+
+    /** Map上にポリラインを表示する */
+    this.map.initPolyLine();
   }
 
   render(): JSX.Element {
     const Fragment = React.Fragment;
-    const style1 = { width: '100vw', height: '100vh' } as React.CSSProperties;
+    const style1 = { width: '100%', height: '90vh' } as React.CSSProperties;
     const style2 = {
-      position: 'absolute',
-      bottom: '32px',
-      zIndex: 100,
-      width: '100%',
+      paddingTop: '16px',
       textAlign: 'center',
+      width: '100%',
       fontWeight: 'bold',
       fontSize: '24px',
     } as React.CSSProperties;
